@@ -1,11 +1,21 @@
 import Navbar from "./components/Navbar"
-import Home from "./pages/Home"
+import Register from "./pages/Register"
+import Login from "./pages/Login"
+import { Route, Routes } from "react-router-dom"
+import Layout from "./components/Layout"
+import Admin from "./pages/Admin"
 
 function App() {
   return (
     <>
       <Navbar/>
-      <Home/>
+      <Routes>
+        <Route path="/" element={<Layout/>}>
+          <Route path="login" element={<Login/>}/>
+          <Route path="register" element={<Register/>}/>
+        </Route>
+        <Route path="/admin" element={<Admin/>}/>
+      </Routes>
     </>
   )
 }
