@@ -45,7 +45,7 @@ export default function Login() {
 
     }
     return (
-        <div className="w-full h-screen z-50 absolute flex items-center justify-center bg-gradient-to-r from-blue-400/40 via-purple-500/40 to-pink-500/40 backdrop-blur-sm font-poppins">
+        <div className="w-full h-screen z-50 fixed flex items-center justify-center bg-gradient-to-r from-blue-400/40 via-purple-500/40 to-pink-500/40 backdrop-blur-sm font-poppins">
             <form onSubmit={(e) => formHandler(e)} className="bg-white z-100 p-8 rounded-lg shadow-lg max-w-sm w-full relative">
                 <RxCross2 onClick={() => navigate("/")} size={25} className=" absolute right-6 top-6 hover:text-red-600 duration-150 transition-all" />
                 <h2 className="text-2xl font-semibold text-center text-gray-700 mb-6">Login</h2>

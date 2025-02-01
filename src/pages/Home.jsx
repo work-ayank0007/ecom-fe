@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Productitem } from "../components/Productitem";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProduct } from "../../app/ecom/productSlice";
+import { fetchCart } from "../../app/ecom/userSlice";
 
 export default function Home() {
     const dispatch = useDispatch();
@@ -9,6 +10,7 @@ export default function Home() {
 
     useEffect(() => {
         dispatch(fetchProduct());
+        dispatch(fetchCart())
     }, [dispatch]);
 
     return (

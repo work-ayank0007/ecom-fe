@@ -1,8 +1,9 @@
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { logged , setRole} from "../../app/ecom/userSlice";
+import { logged, setRole, setCart } from "../../app/ecom/userSlice";
 import toast from "react-hot-toast";
+import { useEffect } from "react";
 
 export default function Navbar() {
     const role = useSelector((state) => state.user.role);
@@ -10,19 +11,48 @@ export default function Navbar() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    // Logout function
+    async function fetchCart() {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_URL}/cart`, { withCredentials: true });
+            dispatch(setCart(response.data.data)); // Store cart data in Redux
+        } catch (e) {
+            toast.error("Failed to fetch cart. Please try again.");
+        }
+    }
+
+    function Auth() {
+        axios.get(`${import.meta.env.VITE_URL}/auth`, {
+            withCredentials: true  
+        })
+            .then(response => {
+                if (response.data.success) {
+                    dispatch(logged(true));
+                    dispatch(setRole(response?.data?.data?.role)); 
+                }
+            })
+            .catch(error => {
+                console.error("Auth check failed:", error?.response?.data?.message);
+            });
+    }
+
+    useEffect(() => { 
+        if (role?.toLowerCase() === 'user' && loggedIn) {
+            fetchCart();
+        }
+    }, [role, loggedIn]);
+
+    useEffect(() => {
+        Auth();
+    }, []); 
     const handleLogout = async () => {
         try {
-            // Make the API call to logout and clear the cookie
             await axios.post(`${import.meta.env.VITE_URL}/logout`, {}, { withCredentials: true });
 
             // Update Redux state to logged out
             dispatch(logged(false));
-            dispatch(setRole("guest"))
-            // Display a success toast
+            dispatch(setRole("guest"));
+            dispatch(setCart([]));  // Clear the cart on logout
             toast.success("Logged out successfully!");
-
-            // Redirect to homepage
             navigate('/');
         } catch (error) {
             console.error("Logout failed", error);
@@ -31,13 +61,12 @@ export default function Navbar() {
     };
 
     return (
-        <div className="w-full bg-gradient-to-r from-blue-400/40 via-purple-500/40 to-pink-500/40 backdrop-blur-sm shadow-lg">
+        <div className="fixed z-50 w-full bg-gradient-to-r from-blue-400/40 via-purple-500/40 to-pink-500/40 backdrop-blur-sm shadow-lg">
             <nav className="mx-auto w-10/12 max-w-7xl flex justify-between items-center py-4">
                 <h1 className="text-2xl font-semibold text-white">
                     <Link to="/">BLUEKART</Link>
                 </h1>
                 <span className="flex items-center gap-x-4">
-                    {/* Not logged in */}
                     {!loggedIn && (
                         <ul className="flex gap-6 text-white">
                             <li>
@@ -48,8 +77,6 @@ export default function Navbar() {
                             </li>
                         </ul>
                     )}
-
-                    {/* If logged in, show role-based navigation */}
                     {role?.toLowerCase() === 'admin' && (
                         <ul className="flex gap-6 text-white">
                             <li>
@@ -66,7 +93,6 @@ export default function Navbar() {
                         </ul>
                     )}
 
-                    {/* Logout button */}
                     {loggedIn && (
                         <button
                             onClick={handleLogout}
